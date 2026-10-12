@@ -31,8 +31,7 @@ jobs:
           fi
           echo "SDKMANAGER encontrado em: $SDKMANAGER"
           yes | "$SDKMANAGER" --licenses
-          "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-          
+          "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0    
 
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -40,7 +39,16 @@ jobs:
 
       - name: Fix AndroidX property
         run: |
-          sed -i "s/android.useAndroidX=['\"]*true['\"]*/android.useAndroidX=true/g" app/build.gradle.kts
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("app/build.gradle.kts")
+          s = p.read_text()
+          s = s.replace("android.useAndroidX='true'", "android.useAndroidX=true")
+          s = s.replace('android.useAndroidX="true"', "android.useAndroidX=true")
+          p.write_text(s)
+          print("Propriedade AndroidX corrigida")
+          print(s.splitlines()[0])
+          PY
      
       - name: Build APK
         run: gradle --no-daemon assembleDebug
