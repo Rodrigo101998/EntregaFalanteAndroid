@@ -40,7 +40,7 @@ jobs:
 
       - name: Fix AndroidX property
         run: |
-          sed -i "s/android.useAndroidX='true'/android.useAndroidX=true/" app/build.gradle.kts
+          sed -i "s/android.useAndroidX=['\"]*true['\"]*/android.useAndroidX=true/g" app/build.gradle.kts
      
       - name: Build APK
         run: gradle --no-daemon assembleDebug
