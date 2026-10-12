@@ -38,13 +38,16 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p = Path("app/build.gradle.kts")
-          s = p.read_text()
-          s = s.replace("android.useAndroidX='true'", "android.useAndroidX=true")
-          s = s.replace('android.useAndroidX="true"', "android.useAndroidX=true")
-          p.write_text(s)
-          print("Propriedade AndroidX corrigida")
-          print(s.splitlines()[0])
+          for p in Path(".").rglob("*"):
+              if p.is_file() and p.suffix in {".kts", ".properties", ".gradle"}:
+                  try:
+                      s = p.read_text()
+                  except Exception:
+                      continue
+                  s = s.replace("android.useAndroidX='true'", "android.useAndroidX=true")
+                  s = s.replace('android.useAndroidX="true"', "android.useAndroidX=true")
+                  p.write_text(s)
+          print("AndroidX configuration checked")
           PY
      
       - name: Build APK
