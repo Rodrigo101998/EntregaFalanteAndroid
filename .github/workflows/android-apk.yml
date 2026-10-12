@@ -46,13 +46,12 @@ jobs:
           p = Path("app/build.gradle.kts")
           s = p.read_text()
           s = s.replace("VERSION_1_8", "VERSION_17")
-          s = s.replace('jvmTarget = "1.8"', 'jvmTarget = "17"')
-          s = s.replace("jvmTarget = '1.8'", 'jvmTarget = "17"')
+          if "compileOptions" not in s:
+              s = s.replace("android {", 'android {\n    compileOptions {\n        sourceCompatibility = JavaVersion.VERSION_17\n        targetCompatibility = JavaVersion.VERSION_17\n    }')
+          if "kotlinOptions" not in s and "kotlin {" not in s:
+              s += '\n\nkotlin {\n    compilerOptions {\n        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)\n    }\n}\n'
           p.write_text(s)
-          print("Java/Kotlin targets updated")
-          for i, line in enumerate(s.splitlines(), 1):
-              if "Compatibility" in line or "jvmTarget" in line:
-                  print(f"{i}: {line.strip()}")
+          print("Java/Kotlin target configuration updated")
           PY
           
       - name: Build APK
