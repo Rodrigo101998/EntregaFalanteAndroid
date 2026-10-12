@@ -38,7 +38,20 @@ jobs:
         run: |
           printf 'android.useAndroidX=true\nkotlin.code.style=official\n' > gradle.properties
           cat gradle.properties
-     
+          
+      - name: Align Java and Kotlin targets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("app/build.gradle.kts")
+          s = p.read_text()
+          s = s.replace('sourceCompatibility = JavaVersion.VERSION_1_8', 'sourceCompatibility = JavaVersion.VERSION_17')
+          s = s.replace('targetCompatibility = JavaVersion.VERSION_1_8', 'targetCompatibility = JavaVersion.VERSION_17')
+          if 'kotlinOptions {' in s and 'jvmTarget' not in s:
+              s = s.replace('kotlinOptions {', 'kotlinOptions {\n        jvmTarget = "17"')
+          p.write_text(s)
+          PY
+          
       - name: Build APK
         run: gradle --no-daemon assembleDebug
 
