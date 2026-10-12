@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Extract Android project
         run: |
           unzip -o EntregaFalanteAndroid_v10.zip
@@ -19,8 +20,8 @@ jobs:
 
       - uses: actions/setup-java@v4
         with:
-         distribution: temurin
-         java-version: '17'
+          distribution: temurin
+          java-version: '17'
 
       - uses: android-actions/setup-android@v3
         with:
@@ -28,10 +29,12 @@ jobs:
             platform-tools
             platforms;android-35
             build-tools;35.0.0
+          accept-android-sdk-licenses: true
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-         gradle-version: '8.9'
+          gradle-version: '8.9'
+
       - name: Build APK
         run: gradle --no-daemon assembleDebug
 
@@ -40,3 +43,4 @@ jobs:
           name: EntregaFalante-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+          
