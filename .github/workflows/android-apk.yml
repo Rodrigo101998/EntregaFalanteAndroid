@@ -34,21 +34,10 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Fix AndroidX property
+      - name: Write Gradle properties
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          for p in Path(".").rglob("*"):
-              if p.is_file() and p.suffix in {".kts", ".properties", ".gradle"}:
-                  try:
-                      s = p.read_text()
-                  except Exception:
-                      continue
-                  s = s.replace("android.useAndroidX='true'", "android.useAndroidX=true")
-                  s = s.replace('android.useAndroidX="true"', "android.useAndroidX=true")
-                  p.write_text(s)
-          print("AndroidX configuration checked")
-          PY
+          printf 'android.useAndroidX=true\nkotlin.code.style=official\n' > gradle.properties
+          cat gradle.properties
      
       - name: Build APK
         run: gradle --no-daemon assembleDebug
